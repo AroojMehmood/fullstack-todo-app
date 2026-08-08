@@ -1,11 +1,13 @@
-// Yeh file backend ke saath saari communication handle karti hai.
-// Har function fetch() use karta hai aur ek Promise return karta hai.
-// Component ke andar hume sirf yeh functions call karne hain — fetch ki details yahin rehti hain.
-
 const BASE_URL = "http://localhost:5000/api/todos";
 
-// Har response ko check karta hai: agar backend ne error status bheja (4xx/5xx),
-// to us error ka message nikal kar throw kar deta hai, taake component catch kar sake.
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+};
+
 const handleResponse = async (response) => {
   const data = await response.json().catch(() => null);
 
@@ -17,36 +19,35 @@ const handleResponse = async (response) => {
   return data;
 };
 
-// GET: sab todos fetch karo
 export const fetchTodos = async () => {
-  const response = await fetch(BASE_URL);
+  const response = await fetch(BASE_URL, {
+    headers: getAuthHeaders(),
+  });
   return handleResponse(response);
 };
 
-// POST: naya todo add karo
 export const addTodo = async (text) => {
   const response = await fetch(BASE_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: getAuthHeaders(),
     body: JSON.stringify({ text }),
   });
   return handleResponse(response);
 };
 
-// PUT: todo update karo (text ya completed status)
 export const updateTodo = async (id, updates) => {
   const response = await fetch(`${BASE_URL}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: getAuthHeaders(),
     body: JSON.stringify(updates),
   });
   return handleResponse(response);
 };
 
-// DELETE: todo remove karo
 export const deleteTodo = async (id) => {
   const response = await fetch(`${BASE_URL}/${id}`, {
     method: "DELETE",
+    headers: getAuthHeaders(),
   });
   return handleResponse(response);
 };

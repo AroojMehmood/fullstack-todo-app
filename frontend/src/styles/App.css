@@ -1,4 +1,4 @@
-/* ===== Reset & base ===== */
+/* Reset & base */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -12,7 +12,7 @@ body {
   min-height: 100vh;
 }
 
-/* ===== App shell + animated aurora background ===== */
+/*  App shell + animated aurora background */
 .app-shell {
   position: relative;
   min-height: 100vh;
@@ -42,7 +42,7 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* ===== Glassmorphism card ===== */
+/*  Glassmorphism card  */
 .todo-card {
   position: relative;
   z-index: 1;
@@ -55,6 +55,7 @@ body {
   -webkit-backdrop-filter: blur(18px);
   box-shadow:0 12px 35px rgba(170,150,220,.25);
   padding: 32px;
+  box-sizing: border-box;
 }
 
 .todo-header {
@@ -63,22 +64,24 @@ body {
 }
 
 .todo-header h1 {
+  margin-bottom: 7px;
   font-size: 1.9rem;
   font-weight: 700;
-  background: linear-gradient(90deg,#E7B9FF,#FFB9D7,#B3F0FF);
+  background: linear-gradient(90deg, #9b3fd1, #d43d91, #4f9fc4);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .todo-subtext {
-  margin-top: 6px;
+  
+  margin-bottom: 7px;
   font-size: 0.85rem;
   color: #7A7393;
 }
 
 
-/* ===== Form ===== */
+/* Form */
 .todo-form {
   display: flex;
   gap: 10px;
@@ -128,7 +131,7 @@ body {
   cursor: not-allowed;
 }
 
-/* ===== Error box ===== */
+/*  Error box */
 .error-box {
  background:#FFE7EF;
 border:1px solid #FFB9D7;
@@ -139,7 +142,7 @@ color:#8F3B5A;
   margin-bottom: 14px;
 }
 
-/* ===== Loader ===== */
+/*  Loader  */
 .loader-wrapper {
   display: flex;
   flex-direction: column;
@@ -163,7 +166,7 @@ color:#8F3B5A;
   to { transform: rotate(360deg); }
 }
 
-/* ===== Empty state ===== */
+/* Empty state */
 .empty-state {
   text-align: center;
   color:#7A7393;
@@ -171,7 +174,7 @@ color:#8F3B5A;
   padding: 24px 0;
 }
 
-/* ===== Todo list & items ===== */
+/* Todo list & items  */
 .todo-list {
   list-style: none;
   display: flex;
@@ -273,7 +276,7 @@ color:#8F3B5A;
   opacity: 0.8;
 }
 
-/* ===== Scrollbar ===== */
+/* Scrollbar */
 .todo-list::-webkit-scrollbar {
   width: 6px;
 }
@@ -283,7 +286,7 @@ color:#8F3B5A;
   border-radius: 10px;
 }
 
-/* ===== Responsive ===== */
+/*  Responsive */
 
 @media (max-width: 480px) {
   .todo-card {
@@ -325,3 +328,136 @@ color:#8F3B5A;
 }
 
 }
+
+/*  Auth pages (Signup / Login) */
+
+.auth-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 430px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid #E7B9FF;
+  border-radius: 20px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 12px 35px rgba(170, 150, 220, 0.25);
+  padding: 32px;
+}
+
+/* Heading */
+.auth-card h1,
+.auth-card h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #A855F7, #EC4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Optional paragraph */
+.auth-card p {
+  color: #6B5E7D;
+  margin-bottom: 20px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 15px;
+}
+
+/* Inputs */
+.auth-form input {
+  width: 100%;
+  padding: 13px 15px;
+  border-radius: 12px;
+  border: 1px solid #D8B4FE;
+  background: #FFFFFF;
+  color: #3E3554;
+  font-size: 0.96rem;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.auth-form input::placeholder {
+  color: #8A7A9E;
+}
+
+.auth-form input:focus {
+  border-color: #c084fc;
+  box-shadow: 0 0 0 4px rgba(192,132,252,.15);
+}
+
+/* Button */
+.auth-form button {
+  margin-top: 8px;
+  padding: 13px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #A855F7, #EC4899);
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .25s ease;
+}
+
+.auth-form button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(168,85,247,.25);
+}
+
+.auth-form button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* Bottom text */
+.auth-switch {
+  text-align: center;
+  margin-top: 18px;
+  color: #6B5E7D;
+  font-size: .95rem;
+}
+
+.auth-switch a {
+  color: #A855F7;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-switch a:hover {
+  color: #EC4899;
+  text-decoration: underline;
+}
+
+.logout-btn {
+  position: absolute;
+  top: 27px;
+  right: 24px;
+  border: 1px solid rgb(232, 182, 232);
+  border-radius: 8px;
+  padding: 8px 16px;
+  background: #FFFFFF;
+  color: #6D2946;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+   /* background: #c9b1d4; */
+   background: #E7B9FF;
+    color: #4A315C;
+  transform: translateY(-1px);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+}
+

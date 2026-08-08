@@ -1,5 +1,4 @@
-// Reusable component — kahin bhi error dikhani ho, isko message prop de kar use karo.
-
+// Reusable component
 const ErrorMessage = ({ message }) => {
   if (!message) return null;
 

@@ -31,7 +31,7 @@ const TodoItem = ({ todo, onToggle, onEdit, onDelete }) => {
   const handleDelete = async () => {
     setBusy(true);
     await onDelete(todo.id);
-    // Agar delete fail ho jaye to busy false karo taake button dobara enable ho
+   
     setBusy(false);
   };
 

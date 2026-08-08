@@ -1,4 +1,4 @@
-// Chhota reusable component — jab bhi data load ho raha ho, yeh spinner dikhata hai.
+// Chhota reusable component 
 
 const Loader = () => {
   return (

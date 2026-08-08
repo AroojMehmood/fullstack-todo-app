@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 // Form component — sirf naya todo add karne ke liye responsible hai.
-// onAdd prop ek function hai jo App.jsx se aata hai (parent handle karta hai actual logic).
 const TodoForm = ({ onAdd }) => {
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);

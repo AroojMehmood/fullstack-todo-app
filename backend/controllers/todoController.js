@@ -1,70 +1,77 @@
-// Controller file — yahan actual CRUD logic likha hai.
-// Routes sirf batate hain "kaunsa URL", controller batata hai "kya karna hai".
+const Todo = require("../models/Todo");
 
-const { todos, getNextId } = require("../data/todos");
-
-// GET /api/todos -> sab todos wapas bhejo
-const getTodos = (req, res) => {
-  res.status(200).json(todos);
+const getTodos = async (req, res) => {
+  try {
+    const todos = await Todo.find({ user: req.user._id }).sort({ createdAt: -1 });
+    res.status(200).json(todos);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch todos." });
+  }
 };
 
-// POST /api/todos -> naya todo add karo
-const createTodo = (req, res) => {
-  const { text } = req.body;
+const createTodo = async (req, res) => {
+  try {
+    const { text } = req.body;
 
-  // Validation: khali ya missing text allow nahi
-  if (!text || typeof text !== "string" || text.trim() === "") {
-    return res.status(400).json({ message: "Todo text is required." });
-  }
-
-  const newTodo = {
-    id: getNextId(),
-    text: text.trim(),
-    completed: false,
-  };
-
-  todos.push(newTodo);
-  res.status(201).json(newTodo);
-};
-
-// PUT /api/todos/:id -> existing todo edit karo (text aur/ya completed status)
-const updateTodo = (req, res) => {
-  const id = Number(req.params.id);
-  const { text, completed } = req.body;
-
-  const todo = todos.find((t) => t.id === id);
-
-  if (!todo) {
-    return res.status(404).json({ message: `Todo with id ${id} not found.` });
-  }
-
-  // Agar text bheja gaya hai to update karo, warna purana rehne do
-  if (text !== undefined) {
-    if (typeof text !== "string" || text.trim() === "") {
-      return res.status(400).json({ message: "Todo text cannot be empty." });
+    if (!text || typeof text !== "string" || text.trim() === "") {
+      return res.status(400).json({ message: "Todo text is required." });
     }
-    todo.text = text.trim();
-  }
 
-  // Agar completed bheja gaya hai to update karo
-  if (completed !== undefined) {
-    todo.completed = Boolean(completed);
+    const newTodo = await Todo.create({ text: text.trim(), user: req.user._id });
+    res.status(201).json(newTodo);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to create todo." });
   }
-
-  res.status(200).json(todo);
 };
 
-// DELETE /api/todos/:id -> todo delete karo
-const deleteTodo = (req, res) => {
-  const id = Number(req.params.id);
-  const index = todos.findIndex((t) => t.id === id);
+const updateTodo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { text, completed } = req.body;
 
-  if (index === -1) {
-    return res.status(404).json({ message: `Todo with id ${id} not found.` });
+    const todo = await Todo.findOne({ _id: id, user: req.user._id });
+
+    if (!todo) {
+      return res.status(404).json({ message: `Todo with id ${id} not found.` });
+    }
+
+    if (text !== undefined) {
+      if (typeof text !== "string" || text.trim() === "") {
+        return res.status(400).json({ message: "Todo text cannot be empty." });
+      }
+      todo.text = text.trim();
+    }
+
+    if (completed !== undefined) {
+      todo.completed = Boolean(completed);
+    }
+
+    await todo.save();
+    res.status(200).json(todo);
+  } catch (error) {
+    if (error.name === "CastError") {
+      return res.status(404).json({ message: "Todo not found." });
+    }
+    res.status(500).json({ message: "Failed to update todo." });
   }
+};
 
-  const deleted = todos.splice(index, 1);
-  res.status(200).json(deleted[0]);
+const deleteTodo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Todo.findOneAndDelete({ _id: id, user: req.user._id });
+
+    if (!deleted) {
+      return res.status(404).json({ message: `Todo with id ${id} not found.` });
+    }
+
+    res.status(200).json(deleted);
+  } catch (error) {
+    if (error.name === "CastError") {
+      return res.status(404).json({ message: "Todo not found." });
+    }
+    res.status(500).json({ message: "Failed to delete todo." });
+  }
 };
 
 module.exports = { getTodos, createTodo, updateTodo, deleteTodo };

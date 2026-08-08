@@ -1,75 +1,228 @@
-# Full Stack Todo App
+# TaskFlow - Full Stack Todo App
 
-A simple full-stack Todo application built with **React (Vite)** on the frontend and **Node.js + Express** on the backend. Data is stored in-memory (no database required).
+TaskFlow is a full-stack Todo application built with React, Node.js, Express.js, and MongoDB. It includes user authentication, protected Todo routes, and complete Todo management functionality.
 
-## Folder Structure
+## Features
 
-```
-todo-app/
-├── backend/
-│   ├── controllers/
-│   │   └── todoController.js
-│   ├── data/
-│   │   └── todos.js
-│   ├── routes/
-│   │   └── todoRoutes.js
-│   ├── server.js
-│   └── package.json
-└── frontend/
-    ├── src/
-    │   ├── api/
-    │   │   └── todoApi.js
-    │   ├── components/
-    │   │   ├── TodoForm.jsx
-    │   │   ├── TodoItem.jsx
-    │   │   ├── TodoList.jsx
-    │   │   ├── Loader.jsx
-    │   │   └── ErrorMessage.jsx
-    │   ├── styles/
-    │   │   └── App.css
-    │   ├── App.jsx
-    │   └── main.jsx
-    ├── index.html
-    ├── vite.config.js
+- User Signup
+- User Login
+- JWT-based Authentication
+- Secure Logout
+- Protected Todo routes
+- Create new Todos
+- Edit Todos
+- Mark Todos as completed or incomplete
+- Delete Todos
+- User-specific Todos
+- MongoDB database integration
+- Loading states
+- Error handling
+- Responsive user interface
+- Modern glassmorphism-inspired design
+
+## Tech Stack
+
+### Frontend
+
+- React
+- JavaScript
+- HTML
+- CSS
+- Vite
+
+### Backend
+
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JWT
+- bcrypt
+
+## Project Structure
+
+```text
+fullstack-todo-app/
+│
+├── frontend/
+│   ├── styles/
+│   │   └── App.css
+│   │
+│   ├── App.jsx
+│   ├── index.css
+│   ├── main.jsx
+│   ├── index.html
+│   ├── .gitignore
+│   └── README.md
+│
+└── backend/
+    ├── config/
+    │   └── db.js
+    │
+    ├── controllers/
+    │   ├── authController.js
+    │   └── todoController.js
+    │
+    ├── middleware/
+    │   └── authMiddleware.js
+    │
+    ├── models/
+    │   ├── User.js
+    │   └── Todo.js
+    │
+    ├── routes/
+    │   ├── authRoutes.js
+    │   └── todoRoutes.js
+    │
+    ├── .env
+    ├── .gitignore
+    ├── server.js
     └── package.json
 ```
 
-## How to Run
+## Authentication
 
-### 1. Backend (runs on http://localhost:5000)
+TaskFlow uses JWT authentication to protect user accounts and Todo data.
 
-```bash
-cd backend
-npm install
-npm start
-```
+Users first create an account using the Signup page. After registration, they can log in using their email and password.
 
-You should see: `✅ Server running on http://localhost:5000`
+After successful login, the server provides an authentication token. This token is sent with protected Todo requests.
 
-### 2. Frontend (runs on http://localhost:5173)
+Only authenticated users can access the Todo functionality.
 
-Open a **new terminal window/tab**, keep the backend running:
+## Todo Management
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
+After logging in, users can:
 
-Open the URL shown in the terminal (usually `http://localhost:5173`) in your browser.
+1. Add a new Todo.
+2. Mark a Todo as completed.
+3. Edit an existing Todo.
+4. Delete a Todo.
+5. View their own Todos.
+6. Logout from the application.
 
-> **Important:** Both servers must run at the same time — backend on port 5000, frontend on port 5173.
+Each user's Todos are associated with their account, so users cannot access another user's Todo data.
 
 ## API Endpoints
 
-| Method | Endpoint          | Description          |
-|--------|-------------------|-----------------------|
-| GET    | /api/todos        | Get all todos         |
-| POST   | /api/todos        | Create a new todo     |
-| PUT    | /api/todos/:id     | Update a todo (text and/or completed) |
-| DELETE | /api/todos/:id     | Delete a todo         |
+### Authentication
 
-## Notes
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/signup` | Create a new user account |
+| POST | `/api/auth/login` | Login to an existing account |
 
-- Data resets whenever the backend server restarts, since it's stored in a JavaScript array in memory (not a database).
-- CORS is enabled on the backend so the frontend (port 5173) can talk to it (port 5000).
+### Todos
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/todos` | Get the logged-in user's Todos |
+| POST | `/api/todos` | Create a new Todo |
+| PUT | `/api/todos/:id` | Update a Todo |
+| DELETE | `/api/todos/:id` | Delete a Todo |
+
+Todo endpoints require a valid JWT token.
+
+## Database
+
+MongoDB is used to permanently store users and Todo data.
+
+Mongoose is used to define database models and communicate with MongoDB.
+
+The backend connects to MongoDB using a connection string stored in an environment variable.
+
+## Environment Variables
+
+The backend uses a `.env` file for sensitive configuration.
+
+Example:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+PORT=5000
+```
+
+The actual `.env` file should never be uploaded to GitHub.
+
+## Running the Project Locally
+
+### Backend
+
+Open a terminal and navigate to the backend folder:
+
+```bash
+cd backend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env` file and add the required environment variables.
+
+Start the backend:
+
+```bash
+npm start
+```
+
+The backend runs on:
+
+```text
+http://localhost:5000
+```
+
+### Frontend
+
+Open another terminal and navigate to the frontend folder:
+
+```bash
+cd frontend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the frontend:
+
+```bash
+npm run dev
+```
+
+Then open the local URL provided by Vite in the browser.
+
+## Security
+
+- Passwords are hashed before being stored in the database.
+- JWT tokens are used for authentication.
+- Protected routes require authentication.
+- MongoDB credentials and JWT secrets are stored in environment variables.
+- `.env` is excluded from Git tracking.
+
+## Future Improvements
+
+Possible future improvements include:
+
+- Todo search and filtering
+- Todo categories
+- Due dates and reminders
+- User profile
+- Dark mode
+- Deployment
+- Improved dashboard and statistics
+
+## Author
+
+**Arooj Mehmood**
+
+BS Computer Science Student
+
+## License
+
+This project was created for learning and development purposes.

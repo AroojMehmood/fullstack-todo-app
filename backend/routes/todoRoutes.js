@@ -1,7 +1,6 @@
-// Routes file — yahan URLs define hote hain aur unhe controller functions se jodte hain.
-
 const express = require("express");
 const router = express.Router();
+const protect = require("../middleware/authMiddleware");
 const {
   getTodos,
   createTodo,
@@ -9,9 +8,11 @@ const {
   deleteTodo,
 } = require("../controllers/todoController");
 
-router.get("/", getTodos);       // GET    /api/todos
-router.post("/", createTodo);    // POST   /api/todos
-router.put("/:id", updateTodo);  // PUT    /api/todos/:id
-router.delete("/:id", deleteTodo); // DELETE /api/todos/:id
+router.use(protect); 
+
+router.get("/", getTodos);
+router.post("/", createTodo);
+router.put("/:id", updateTodo);
+router.delete("/:id", deleteTodo);
 
 module.exports = router;
