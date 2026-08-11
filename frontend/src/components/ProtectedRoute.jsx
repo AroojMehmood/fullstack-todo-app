@@ -1,11 +1,12 @@
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 // Yeh component kisi bhi page ko "wrap" karta hai jo sirf logged-in users dekh sakte hain.
-// Agar localStorage mein token nahi hai, to user ko /login pe bhej dete hain.
+// Ab localStorage seedha check karne ke bajaye AuthContext se isAuthenticated leta hai.
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
+  const { isAuthenticated } = useAuth();
 
-  if (!token) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 

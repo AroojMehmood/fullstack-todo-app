@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useTodos } from "../context/TodoContext.jsx";
 
-// Ek single todo ko represent karta hai.
-// Teen kaam: complete toggle karna, edit karna, delete karna.
-// Saare actual API calls parent (App.jsx) mein hote hain — yeh component sirf UI + local edit-state sambhalta hai.
-const TodoItem = ({ todo, onToggle, onEdit, onDelete }) => {
+// Ek single todo ko represent karta hai. `todo` data prop se aata hai,
+// lekin toggle/edit/delete actions ab seedha TodoContext se milte hain —
+// TodoList ke through drill nahi karte.
+const TodoItem = ({ todo }) => {
+  const { toggleTodo, editTodo, deleteTodoItem } = useTodos();
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(todo.text);
   const [busy, setBusy] = useState(false);
@@ -20,18 +22,17 @@ const TodoItem = ({ todo, onToggle, onEdit, onDelete }) => {
 
   const saveEdit = async () => {
     const trimmed = editText.trim();
-    if (!trimmed) return; // Khali text save nahi hone dena
+    if (!trimmed) return;
 
     setBusy(true);
-    await onEdit(todo.id, trimmed);
+    await editTodo(todo.id, trimmed);
     setBusy(false);
     setIsEditing(false);
   };
 
   const handleDelete = async () => {
     setBusy(true);
-    await onDelete(todo.id);
-   
+    await deleteTodoItem(todo.id);
     setBusy(false);
   };
 
@@ -40,7 +41,7 @@ const TodoItem = ({ todo, onToggle, onEdit, onDelete }) => {
       <input
         type="checkbox"
         checked={todo.completed}
-        onChange={() => onToggle(todo.id, !todo.completed)}
+        onChange={() => toggleTodo(todo.id, !todo.completed)}
         disabled={busy}
         aria-label={`Mark "${todo.text}" as ${todo.completed ? "incomplete" : "complete"}`}
       />

@@ -1,78 +1,16 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import TodoForm from "../components/TodoForm.jsx";
 import TodoList from "../components/TodoList.jsx";
-import Loader from "../components/Loader.jsx";
+import TodoSkeleton from "../components/TodoSkeleton.jsx";
 import ErrorMessage from "../components/ErrorMessage.jsx";
-import { fetchTodos, addTodo, updateTodo, deleteTodo } from "../api/todoApi.js";
+import { useAuth } from "../context/AuthContext.jsx";
+import { useTodos } from "../context/TodoContext.jsx";
 
 function Home() {
-  const [todos, setTodos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    loadTodos();
-  }, []);
+  const { logout } = useAuth();
+ const { todos, loading, error, reloadTodos } = useTodos();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
-
-  const loadTodos = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const data = await fetchTodos();
-      setTodos(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAdd = async (text) => {
-    setError("");
-    try {
-      const newTodo = await addTodo(text);
-      setTodos((prev) => [...prev, newTodo]);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const handleToggle = async (id, completed) => {
-    setError("");
-    try {
-      const updated = await updateTodo(id, { completed });
-      setTodos((prev) => prev.map((t) => (t.id === id ? updated : t)));
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const handleEdit = async (id, text) => {
-    setError("");
-    try {
-      const updated = await updateTodo(id, { text });
-      setTodos((prev) => prev.map((t) => (t.id === id ? updated : t)));
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    setError("");
-    try {
-      await deleteTodo(id);
-      setTodos((prev) => prev.filter((t) => t.id !== id));
-    } catch (err) {
-      setError(err.message);
-    }
+    logout();
   };
 
   const completedCount = todos.filter((t) => t.completed).length;
@@ -96,20 +34,11 @@ function Home() {
           </button>
         </div>
 
-        <TodoForm onAdd={handleAdd} />
+        <TodoForm />
 
-        <ErrorMessage message={error} />
+       <ErrorMessage message={error} onRetry={reloadTodos} />
 
-        {loading ? (
-          <Loader />
-        ) : (
-          <TodoList
-            todos={todos}
-            onToggle={handleToggle}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        )}
+        {loading ? <TodoSkeleton /> : <TodoList />}
       </main>
     </div>
   );

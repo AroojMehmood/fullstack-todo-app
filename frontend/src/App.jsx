@@ -3,6 +3,7 @@ import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import { TodoProvider } from "./context/TodoContext.jsx";
 
 function App() {
   return (
@@ -13,7 +14,9 @@ function App() {
         path="/"
         element={
           <ProtectedRoute>
-            <Home />
+            <TodoProvider>
+              <Home />
+            </TodoProvider>
           </ProtectedRoute>
         }
       />

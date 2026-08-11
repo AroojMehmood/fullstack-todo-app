@@ -1,20 +1,23 @@
 import { useState } from "react";
+import { useTodos } from "../context/TodoContext.jsx";
 
 // Form component — sirf naya todo add karne ke liye responsible hai.
-const TodoForm = ({ onAdd }) => {
+// Ab onAdd prop ki zarurat nahi — addTodo seedha TodoContext se milta hai.
+const TodoForm = () => {
+  const { addTodo } = useTodos();
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Page reload rokne ke liye (default form behavior)
+    e.preventDefault();
 
     const trimmed = text.trim();
-    if (!trimmed) return; // Khali text submit nahi hone dena
+    if (!trimmed) return;
 
     setSubmitting(true);
-    await onAdd(trimmed);
+    await addTodo(trimmed);
     setSubmitting(false);
-    setText(""); // Input field clear kar do success ke baad
+    setText("");
   };
 
   return (
