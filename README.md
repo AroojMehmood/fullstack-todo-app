@@ -2,6 +2,23 @@
 
 TaskFlow is a full-stack Todo application built with React, Node.js, Express.js, and MongoDB. It includes user authentication, global state management with React Context, protected Todo routes, and complete Todo management functionality with a polished, responsive UI.
 
+## Live Demo
+
+- **Frontend:** https://fullstack-todo-app-gold-iota.vercel.app
+- **Backend API:** https://fullstack-todo-app-production-1d45.up.railway.app
+
+## Screenshots
+
+![TaskFlow Todo UI](screenshots/todo-app-ui.png)
+
+### Lighthouse Audit — Before & After
+
+SEO improved from 82 to 100 after adding a meta description and a valid `robots.txt`.
+
+| Before | After |
+|---|---|
+| ![Lighthouse scores before](screenshots/lighthouse-scores-before.png) | ![Lighthouse scores after](screenshots/lighthouse-scores-After.png) |
+
 ## Features
 
 - User Signup
@@ -59,7 +76,14 @@ Components now consume state directly via `useAuth()` and `useTodos()` hooks ins
 ```text
 fullstack-todo-app/
 │
+├── screenshots/
+│   ├── todo-app-ui.png
+│   ├── lighthouse-scores-before.png
+│   └── lighthouse-scores-After.png
+│
 ├── frontend/
+│   ├── public/
+│   │   └── robots.txt
 │   ├── src/
 │   │   ├── api/
 │   │   │   ├── authApi.js
@@ -90,6 +114,8 @@ fullstack-todo-app/
 │   │   └── main.jsx
 │   │
 │   ├── index.html
+│   ├── vercel.json
+│   ├── .env.example
 │   ├── .gitignore
 │   └── package.json
 │
@@ -113,6 +139,7 @@ fullstack-todo-app/
     │   └── todoRoutes.js
     │
     ├── .env
+    ├── .env.example
     ├── .gitignore
     ├── server.js
     └── package.json
@@ -197,17 +224,26 @@ For production deployments, IP whitelisting is handled differently (e.g. via a f
 
 ## Environment Variables
 
-The backend uses a `.env` file for sensitive configuration.
-
-Example:
+### Backend (`backend/.env`)
 
 ```env
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 PORT=5000
+FRONTEND_URL=http://localhost:5173
 ```
 
-The actual `.env` file should never be uploaded to GitHub.
+`FRONTEND_URL` is used to configure CORS — in production it must be set to the deployed frontend's URL so the browser is allowed to call the API.
+
+### Frontend (`frontend/.env`)
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+In production (Vercel), this is set to the deployed backend URL instead.
+
+The actual `.env` files should never be uploaded to GitHub — both are already excluded via `.gitignore`. Reference `.env.example` files are included in both `backend/` and `frontend/` instead.
 
 ## Running the Project Locally
 
@@ -261,6 +297,34 @@ npm run dev
 
 Then open the local URL provided by Vite in the browser.
 
+## Deployment
+
+The app is deployed across three services:
+
+| Layer | Platform | Notes |
+|---|---|---|
+| Frontend | [Vercel](https://vercel.com) | Deployed from `frontend/` (Root Directory), auto-deploys on push to `main` |
+| Backend | [Railway](https://railway.app) | Deployed from `backend/` (Root Directory), auto-deploys on push to `main` |
+| Database | [MongoDB Atlas](https://cloud.mongodb.com) | Network Access set to allow all IPs (`0.0.0.0/0`) since the backend host's outbound IP is not fixed |
+
+**Deployment notes:**
+- The frontend includes a `vercel.json` rewrite rule so client-side routes (e.g. `/login`, `/signup`) don't 404 on a hard refresh or direct URL visit — this is required for any React Router SPA on Vercel.
+- The backend's CORS configuration only allows requests from `http://localhost:5173` and the URL in `FRONTEND_URL`, rather than allowing all origins.
+- If the backend is redeployed/restarted and MongoDB connection errors appear, check that MongoDB Atlas → Network Access still has an active `0.0.0.0/0` entry.
+
+### Lighthouse Audit
+
+Run against the deployed frontend (mobile, Chrome DevTools):
+
+| Category | Score |
+|---|---|
+| Performance | 96 |
+| Accessibility | 95 |
+| Best Practices | 100 |
+| SEO | 100 |
+
+SEO was improved from 82 → 100 by adding a meta description (`frontend/index.html`) and a `robots.txt` (`frontend/public/robots.txt`), which resolved Lighthouse's "missing meta description" and "robots.txt is not valid" flags.
+
 ## Security
 
 - Passwords are hashed before being stored in the database.
@@ -278,7 +342,6 @@ Possible future improvements include:
 - Due dates and reminders
 - User profile
 - Dark mode
-- Deployment
 - Improved dashboard and statistics
 
 ## Author
