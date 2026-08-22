@@ -574,3 +574,261 @@ body {
   transform: translateY(0);
 }
 
+/*  Navbar */
+.app-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid #E7B9FF;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  flex-wrap: wrap;
+}
+
+.navbar-brand {
+  font-size: 1.3rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #A855F7, #EC4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  flex-shrink: 0;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  padding: 8px 14px;
+  border-radius: 10px;
+  color: #6B5E7D;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background: #FFF0FA;
+  color: #3E3554;
+}
+
+.nav-link-active {
+  background: linear-gradient(90deg, #E7B9FF, #FFB9D7);
+  color: #6D2946;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.navbar-username {
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #A855F7, #EC4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Page content wrapper — App shell ke andar Navbar ke neeche */
+.page-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 65px);
+}
+
+.form-stacked {
+  flex-direction: column;
+}
+
+.form-stacked button {
+  padding: 12px 20px;
+  width: 100%;
+}
+
+.app-shell:has(.app-navbar) {
+  display: block;
+  padding: 0;
+}
+
+/* Navbar Responsive */
+@media (max-width: 700px) {
+  .app-navbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "brand user"
+      "links links"
+      "logout logout";
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    position: static;
+  }
+
+  .navbar-user {
+    display: contents;
+  }
+
+  .navbar-brand {
+    grid-area: brand;
+    width: fit-content;
+  }
+
+  .navbar-username {
+    grid-area: user;
+    justify-self: end;
+  }
+
+  .navbar-links {
+    grid-area: links;
+    justify-content: center;
+  }
+
+    .app-navbar .logout-btn {
+    grid-area: logout;
+    /* width: auto;
+    min-width: 120px; */
+    width: 100%;
+    justify-self: center;
+  }
+
+  .page-content {
+    padding: 16px;
+    min-height: auto;
+  }
+}
+
+/*  Dashboard */
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.stat-card {
+  background: #FFFFFF;
+  border: 1px solid #E7B9FF;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 1.6rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #A855F7, #EC4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  color: #7A7393;
+  font-weight: 600;
+}
+
+.dashboard-recent {
+  margin-top: 20px;
+}
+
+.dashboard-recent h3 {
+  font-size: 1rem;
+  color: #3E3554;
+  margin-bottom: 10px;
+}
+
+/*  Dashboard Responsive  */
+@media (max-width: 600px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 380px) {
+  .dashboard-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*  Plain links (project titles, "Create one" etc.)  */
+.link-plain {
+  color: #A855F7;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.link-plain:hover {
+  color: #EC4899;
+  text-decoration: underline;
+}
+
+/* Consistent, responsive dropdown styling  */
+.select-input {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #D8B4FE;
+  background: #FFFFFF;
+  color: #3E3554;
+  font-size: 0.9rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.select-input:focus {
+  border-color: #c084fc;
+  box-shadow: 0 0 0 4px rgba(192, 132, 252, 0.15);
+}
+
+/* Task item ke andar status dropdown thoda chhota reh sakta hai desktop pe */
+.task-status-select {
+  width: auto;
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+/* Responsive: sab selects full-width ho jayen mobile pe, overflow na ho */
+@media (max-width: 480px) {
+  .select-input,
+  .task-status-select {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .todo-item {
+    overflow-x: hidden;
+  }
+}

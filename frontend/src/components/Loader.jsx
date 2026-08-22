@@ -4,7 +4,7 @@ const Loader = () => {
   return (
     <div className="loader-wrapper">
       <div className="spinner"></div>
-      <p>Loading todos...</p>
+      <p>Loading your workspace...</p>
     </div>
   );
 };

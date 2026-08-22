@@ -1,355 +1,296 @@
-# TaskFlow - Full Stack Todo App
+# TaskFlow — Full-Stack Task Management Platform
 
-TaskFlow is a full-stack Todo application built with React, Node.js, Express.js, and MongoDB. It includes user authentication, global state management with React Context, protected Todo routes, and complete Todo management functionality with a polished, responsive UI.
+A production-ready full-stack productivity app built on top of an existing MERN Todo application. TaskFlow lets users organize their work into **Projects**, break each project down into **Tasks**, and still keep a simple standalone **Todo list** for quick day-to-day items — all behind secure, role-based authentication.
 
-## Live Demo
+**Live Demo:** https://fullstack-todo-app-gold-iota.vercel.app
+**Backend API:** https://fullstack-todo-app-production-1d45.up.railway.app
 
-- **Frontend:** https://fullstack-todo-app-gold-iota.vercel.app
-- **Backend API:** https://fullstack-todo-app-production-1d45.up.railway.app
+---
 
-## Screenshots
+## Table of Contents
 
-![TaskFlow Todo UI](screenshots/todo-app-ui.png)
+- [Features](#features)
+- [How to Use the App](#how-to-use-the-app)
+- [Technology Stack](#technology-stack)
+- [Architecture Overview](#architecture-overview)
+- [Folder Structure](#folder-structure)
+- [Authentication & Authorization](#authentication--authorization)
+- [Database Overview](#database-overview)
+- [API Overview](#api-overview)
+- [Environment Variables](#environment-variables)
+- [Local Setup](#local-setup)
+- [Running Tests](#running-tests)
+- [Deployment](#deployment)
+- [Case Study](#case-study)
+- [Future Improvements](#future-improvements)
 
-### Lighthouse Audit — Before & After
-
-SEO improved from 82 to 100 after adding a meta description and a valid `robots.txt`.
-
-| Before | After |
-|---|---|
-| ![Lighthouse scores before](screenshots/lighthouse-scores-before.png) | ![Lighthouse scores after](screenshots/lighthouse-scores-After.png) |
+---
 
 ## Features
 
-- User Signup
-- User Login
-- JWT-based Authentication
-- Secure Logout
-- Global state management using React Context API (Auth + Todos)
-- Protected Todo routes
-- Create new Todos
-- Edit Todos
-- Mark Todos as completed or incomplete
-- Delete Todos
-- User-specific Todos
-- MongoDB database integration
-- Skeleton loading UI for all data-fetching states
-- Polished empty states (no blank screens)
-- Error states with a "Try Again" retry option
-- Responsive user interface
-- Modern glassmorphism-inspired design with an animated aurora background
+- 🔐 **Authentication** — Signup, login, logout with JWT, protected frontend and backend routes
+- 👥 **Role-based permissions** — Regular users manage their own data; admins get a read-only application-wide overview
+- 📁 **Projects** — Full CRUD, each project has a title, description, and status (Active / On Hold / Completed)
+- ✅ **Tasks** — Full CRUD, each task belongs to a project, with status (To Do / In Progress / Completed), priority (Low / Medium / High), and an optional due date
+- 📝 **Todos** — The original standalone todo list is fully preserved, independent from Projects/Tasks
+- 📊 **Dashboard** — Real-time stats pulled directly from the database (projects, tasks, completion counts, high-priority tasks, todos)
+- 🛡️ **Data isolation** — Every user only ever sees their own projects, tasks, and todos, enforced on the backend
+- 🎨 **Responsive UI** — Light pink/lavender glassmorphism theme, works across desktop, tablet, and mobile
+- 🧪 **Automated tests** — 10 backend tests (Jest + Supertest + in-memory MongoDB) and 6 frontend tests (Vitest + React Testing Library)
 
-## Tech Stack
+---
 
-### Frontend
+## How to Use the App
 
-- React
-- React Context API (global state)
-- React Router
-- JavaScript
-- HTML
-- CSS
-- Vite
+1. **Sign up / Log in** — Create an account or log in with existing credentials.
+2. **Dashboard** (`/dashboard`) — The landing page after login. Shows a real-time summary: total projects, total tasks, completed/pending tasks, high-priority tasks, and todos, plus a list of your most recent projects.
+3. **Projects** (`/projects`) — Lists all your projects. Click **"+ New Project"** to create one. Each project shows its status and can be edited or deleted from this page.
+   - **Clicking a project's title opens that project's detail page**, where you can add, view, edit, and delete the **Tasks** that belong to it. This is the main way task management is accessed — there is no separate "Tasks" tab in the navbar, because tasks always live inside a project.
+4. **Todos** (`/todos`) — A simple, independent checklist. Unlike Projects/Tasks, todos are **not** linked to any project — they're for quick, unstructured items (e.g. "buy groceries", "submit assignment"). Add, complete, edit, and delete todos here exactly as in the original Todo app.
+5. **Admin** (`/admin`, admin accounts only) — Visible in the navbar only to users with the `admin` role. Shows total users/projects/tasks across the whole application and a list of registered users. Regular users are redirected away if they try to access this URL directly.
+6. **Logout** — Available from the navbar on every page.
 
-### Backend
+---
 
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT
-- bcrypt
+## Technology Stack
 
-## Global State Management
+**Frontend:** React (Vite), React Router, Context API, plain CSS
+**Backend:** Node.js, Express
+**Database:** MongoDB (Mongoose ODM), hosted on MongoDB Atlas
+**Auth:** JSON Web Tokens (JWT), bcrypt password hashing
+**Testing:** Jest + Supertest + mongodb-memory-server (backend), Vitest + React Testing Library (frontend)
 
-TaskFlow uses React's built-in Context API instead of an external state library like Redux, since the app's shared state (auth session and todo data) is simple enough that Context keeps things lightweight and beginner-friendly.
+---
 
-Two contexts are used:
+## Architecture Overview
 
-- **AuthContext** — holds the logged-in user, token, and `isAuthenticated` status, and exposes `login()` and `logout()`. This replaced direct `localStorage` reads scattered across components and removed the need for hard page reloads after login/signup.
-- **TodoContext** — holds `todos`, `loading`, and `error` state along with `addTodo`, `toggleTodo`, `editTodo`, and `deleteTodoItem`. This removed prop-drilling that previously passed todo data and handler functions from `Home` through `TodoList` down to `TodoItem`.
+TaskFlow follows a standard MERN client-server architecture:
 
-Components now consume state directly via `useAuth()` and `useTodos()` hooks instead of receiving it through props.
-
-## Project Structure
-
-```text
-fullstack-todo-app/
-│
-├── screenshots/
-│   ├── todo-app-ui.png
-│   ├── lighthouse-scores-before.png
-│   └── lighthouse-scores-After.png
-│
-├── frontend/
-│   ├── public/
-│   │   └── robots.txt
-│   ├── src/
-│   │   ├── api/
-│   │   │   ├── authApi.js
-│   │   │   └── todoApi.js
-│   │   │
-│   │   ├── context/
-│   │   │   ├── AuthContext.jsx
-│   │   │   └── TodoContext.jsx
-│   │   │
-│   │   ├── components/
-│   │   │   ├── ErrorMessage.jsx
-│   │   │   ├── Loader.jsx
-│   │   │   ├── ProtectedRoute.jsx
-│   │   │   ├── TodoForm.jsx
-│   │   │   ├── TodoItem.jsx
-│   │   │   ├── TodoList.jsx
-│   │   │   └── TodoSkeleton.jsx
-│   │   │
-│   │   ├── pages/
-│   │   │   ├── Home.jsx
-│   │   │   ├── Login.jsx
-│   │   │   └── Signup.jsx
-│   │   │
-│   │   ├── styles/
-│   │   │   └── App.css
-│   │   │
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   │
-│   ├── index.html
-│   ├── vercel.json
-│   ├── .env.example
-│   ├── .gitignore
-│   └── package.json
-│
-└── backend/
-    ├── config/
-    │   └── db.js
-    │
-    ├── controllers/
-    │   ├── authController.js
-    │   └── todoController.js
-    │
-    ├── middleware/
-    │   └── authMiddleware.js
-    │
-    ├── models/
-    │   ├── User.js
-    │   └── Todo.js
-    │
-    ├── routes/
-    │   ├── authRoutes.js
-    │   └── todoRoutes.js
-    │
-    ├── .env
-    ├── .env.example
-    ├── .gitignore
-    ├── server.js
-    └── package.json
+```
+React (Vite) Frontend  ──HTTP (fetch)──▶  Express REST API  ──Mongoose──▶  MongoDB Atlas
+   localhost:5173                            localhost:5000
 ```
 
-## Authentication
+- The frontend never talks to MongoDB directly — every request goes through the Express API, which validates the JWT, checks ownership of the requested resource, and only then reads/writes to the database.
+- **React Context** (`AuthContext`, `ProjectContext`, `TaskContext`, `TodoContext`) manages client-side state and API calls, so pages/components stay focused on rendering rather than data-fetching logic.
+- **Ownership-based authorization** is enforced on *every* protected backend route: a resource is only returned or modified if `owner === req.user._id` (checked in the database query itself, not just in application logic), which is what guarantees User A can never see or touch User B's data.
+- The Express app is split into `app.js` (routes, middleware — no DB connection or `listen()`) and `server.js` (connects to MongoDB, then starts the app). This split lets the automated backend tests import `app.js` directly and run against an isolated in-memory database, without ever touching the real server or MongoDB Atlas.
 
-TaskFlow uses JWT authentication to protect user accounts and Todo data.
+---
 
-Users first create an account using the Signup page. After registration, they can log in using their email and password.
+## Folder Structure
 
-After successful login, the server provides an authentication token. This token, along with the user's info, is stored via `AuthContext`, which keeps `localStorage` in sync and makes the session available anywhere in the app through the `useAuth()` hook — without needing a full page reload.
+```
+fullstack-todo-app/
+├── backend/
+│   ├── app.js                     # Express app (routes + middleware), no DB/listen — used by tests
+│   ├── server.js                  # Entry point: connects DB, starts the app
+│   ├── config/
+│   │   └── db.js                  # MongoDB connection logic
+│   ├── models/
+│   │   ├── user.js                # User (name, email, password hash, role)
+│   │   ├── Todo.js                # Standalone todo items
+│   │   ├── Project.js             # Projects (title, description, status, owner)
+│   │   └── Task.js                # Tasks (title, status, priority, dueDate, project, owner)
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── todoController.js
+│   │   ├── projectController.js
+│   │   ├── taskController.js
+│   │   ├── dashboardController.js
+│   │   └── adminController.js
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── todoRoutes.js
+│   │   ├── projectRoutes.js
+│   │   ├── taskRoutes.js
+│   │   ├── dashboardRoutes.js
+│   │   └── adminRoutes.js
+│   ├── middleware/
+│   │   ├── authMiddleware.js      # JWT verification ("protect")
+│   │   └── adminMiddleware.js     # Role check ("adminOnly")
+│   └── tests/
+│       ├── setup.js               # In-memory MongoDB lifecycle for Jest
+│       ├── helpers.js             # Shared test helpers (register + login)
+│       ├── auth.test.js
+│       └── project-task.test.js
+│
+└── frontend/
+    └── src/
+        ├── api/                    # fetch()-based API layer
+        │   ├── authApi.js
+        │   ├── todoApi.js
+        │   ├── projectApi.js
+        │   ├── taskApi.js
+        │   ├── dashboardApi.js
+        │   └── adminApi.js
+        ├── context/                 # React Context providers
+        │   ├── AuthContext.jsx
+        │   ├── TodoContext.jsx
+        │   ├── ProjectContext.jsx
+        │   └── TaskContext.jsx
+        ├── components/
+        │   ├── Navbar.jsx, AppLayout.jsx
+        │   ├── ProtectedRoute.jsx, AdminRoute.jsx
+        │   ├── TodoForm.jsx, TodoList.jsx, TodoItem.jsx, TodoSkeleton.jsx
+        │   ├── ErrorMessage.jsx, Loader.jsx
+        │   └── __tests__/
+        ├── pages/
+        │   ├── Login.jsx, Signup.jsx
+        │   ├── Dashboard.jsx
+        │   ├── Projects.jsx, ProjectDetails.jsx
+        │   ├── Home.jsx (Todos)
+        │   ├── Admin.jsx
+        │   └── __tests__/
+        └── styles/
+            └── App.css
+```
 
-Only authenticated users can access the Todo functionality; `ProtectedRoute` checks `isAuthenticated` from `AuthContext` and redirects unauthenticated users to `/login`.
+---
 
-## Todo Management
+## Authentication & Authorization
 
-After logging in, users can:
+- **Signup/Login** — Passwords are hashed with bcrypt before being stored; a JWT is issued on successful signup/login and stored in `localStorage` on the client.
+- **Protected routes (frontend)** — `ProtectedRoute` wraps every page except Login/Signup; unauthenticated users are redirected to `/login`.
+- **Protected routes (backend)** — The `protect` middleware verifies the JWT on every request to `/api/todos`, `/api/projects`, `/api/tasks`, `/api/dashboard`, and `/api/admin`, and attaches the authenticated user to `req.user`.
+- **Roles** — Every user has a `role` of either `"user"` (default) or `"admin"`. The `adminOnly` middleware, combined with the frontend's `AdminRoute`, restricts `/admin` and `/api/admin/overview` to admin accounts only.
+- **Data isolation** — Every Project/Task/Todo query is scoped with `owner: req.user._id` at the database level, so it's structurally impossible for one user's data to leak into another user's request — this was verified with dedicated automated tests (see [Running Tests](#running-tests)).
 
-1. Add a new Todo.
-2. Mark a Todo as completed.
-3. Edit an existing Todo.
-4. Delete a Todo.
-5. View their own Todos.
-6. Logout from the application.
+---
 
-Each user's Todos are associated with their account, so users cannot access another user's Todo data.
+## Database Overview
 
-## Loading, Empty & Error States
+MongoDB Atlas, accessed through Mongoose. Four collections:
 
-- **Loading:** While todos are being fetched, animated skeleton placeholders are shown instead of a blank screen or a plain spinner.
-- **Empty:** When a user has zero todos, a polished empty state is shown ("No tasks yet — Add your first task above to get started") with a button that focuses the add-todo input.
-- **Error:** If a request fails, an error message is shown along with a "Try Again" button that re-fetches the todos.
+| Collection | Key Fields | Relationship |
+|---|---|---|
+| `users` | name, email, password (hashed), role | — |
+| `todos` | text, completed, user | belongs to a User |
+| `projects` | title, description, status, owner | belongs to a User |
+| `tasks` | title, description, status, priority, dueDate, project, owner | belongs to a Project **and** a User |
 
-## API Endpoints
+Deleting a project cascades — all of its tasks are deleted along with it.
 
-### Authentication
+---
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/signup` | Create a new user account |
-| POST | `/api/auth/login` | Login to an existing account |
+## API Overview
 
-### Todos
+All routes below (except `/api/auth/*`) require an `Authorization: Bearer <token>` header.
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/todos` | Get the logged-in user's Todos |
-| POST | `/api/todos` | Create a new Todo |
-| PUT | `/api/todos/:id` | Update a Todo |
-| DELETE | `/api/todos/:id` | Delete a Todo |
-
-Todo endpoints require a valid JWT token.
-
-## Database
-
-MongoDB is used to permanently store users and Todo data.
-
-Mongoose is used to define database models and communicate with MongoDB.
-
-The backend connects to MongoDB using a connection string stored in an environment variable.
-
-> ## ⚠️ IMPORTANT: MongoDB Connection Troubleshooting
-
-**If the backend shows a MongoDB connection error (`MongoServerSelectionError` or similar), this is NOT a code issue.**
-
-MongoDB Atlas only allows connections from **whitelisted IP addresses** (under Network Access). Many ISPs — especially in Pakistan — assign **dynamic IP addresses**, meaning your IP changes periodically (after router restarts, network switches, etc.). When your IP changes, MongoDB Atlas blocks the connection because the new IP isn't whitelisted yet.
-
-### ✅ How to fix it:
-
-1. Go to [MongoDB Atlas](https://cloud.mongodb.com) → your project
-2. Click **Network Access** in the left sidebar
-3. Click **"Add IP Address"**
-4. Select **"Allow Access from Anywhere"** (adds `0.0.0.0/0`)
-5. Confirm — this permanently resolves the issue for development
-
-**This is a well-known infrastructure limitation of dynamic IP networks and MongoDB Atlas's security model — it is not a bug in the application code.** The backend code, Mongoose connection logic, and error handling are implemented correctly; the connection simply requires the current network IP to be authorized in Atlas.
-
-For production deployments, IP whitelisting is handled differently (e.g. via a fixed server IP or VPC peering), but for local development, "Allow Access from Anywhere" is the standard practice.
+| Method | Route | Description |
+|---|---|---|
+| POST | `/api/auth/signup` | Register a new user |
+| POST | `/api/auth/login` | Log in, returns a JWT |
+| GET/POST | `/api/todos` | List / create todos |
+| PUT/DELETE | `/api/todos/:id` | Update / delete a todo |
+| GET/POST | `/api/projects` | List / create projects |
+| PUT/DELETE | `/api/projects/:id` | Update / delete a project |
+| GET/POST | `/api/tasks` | List / create tasks (optionally filter by `?project=`) |
+| PUT/DELETE | `/api/tasks/:id` | Update / delete a task |
+| GET | `/api/dashboard` | Real-time stats for the logged-in user |
+| GET | `/api/admin/overview` | Admin-only: application-wide stats and user list |
 
 ---
 
 ## Environment Variables
 
-### Backend (`backend/.env`)
-
-```env
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
+**`backend/.env`** (never committed — see `backend/.env.example`):
+```
+MONGODB_URI=your_mongodb_atlas_connection_string_here
+JWT_SECRET=your_random_jwt_secret_here
 PORT=5000
 FRONTEND_URL=http://localhost:5173
 ```
 
-`FRONTEND_URL` is used to configure CORS — in production it must be set to the deployed frontend's URL so the browser is allowed to call the API.
-
-### Frontend (`frontend/.env`)
-
-```env
+**`frontend/.env`** (never committed — see `frontend/.env.example`):
+```
 VITE_API_URL=http://localhost:5000
 ```
 
-In production (Vercel), this is set to the deployed backend URL instead.
+---
 
-The actual `.env` files should never be uploaded to GitHub — both are already excluded via `.gitignore`. Reference `.env.example` files are included in both `backend/` and `frontend/` instead.
+## Local Setup
 
-## Running the Project Locally
+```bash
+git clone <your-repo-url>
+cd fullstack-todo-app
+```
 
 ### Backend
-
-Open a terminal and navigate to the backend folder:
-
 ```bash
 cd backend
-```
-
-Install dependencies:
-
-```bash
 npm install
-```
-
-Create a `.env` file and add the required environment variables.
-
-Start the backend:
-
-```bash
-npm start
-```
-
-The backend runs on:
-
-```text
-http://localhost:5000
-```
-
-### Frontend
-
-Open another terminal and navigate to the frontend folder:
-
-```bash
-cd frontend
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Start the frontend:
-
-```bash
+cp .env.example .env   # then fill in your real MongoDB URI and JWT secret
 npm run dev
 ```
+Expected output: `✅ MongoDB connected: ...` and `✅ Server running on http://localhost:5000`
 
-Then open the local URL provided by Vite in the browser.
+### Frontend
+```bash
+cd frontend
+npm install
+cp .env.example .env   # defaults to http://localhost:5000, fine for local dev
+npm run dev
+```
+Expected output: `Local: http://localhost:5173/`
+
+---
+
+## Running Tests
+
+### Backend (10 tests — Jest + Supertest + in-memory MongoDB)
+```bash
+cd backend
+npm test
+```
+Tests never touch the real MongoDB Atlas database — a temporary in-memory MongoDB instance is spun up automatically for the test run and destroyed afterward.
+
+### Frontend (6 tests — Vitest + React Testing Library)
+```bash
+cd frontend
+npm test
+```
+
+**Total: 16 automated tests**, covering happy paths, validation failures, and cross-user authorization/data-isolation cases.
+
+---
 
 ## Deployment
 
-The app is deployed across three services:
+- **Frontend:** Vercel
+- **Backend:** Railway
+- **Database:** MongoDB Atlas
 
-| Layer | Platform | Notes |
-|---|---|---|
-| Frontend | [Vercel](https://vercel.com) | Deployed from `frontend/` (Root Directory), auto-deploys on push to `main` |
-| Backend | [Railway](https://railway.app) | Deployed from `backend/` (Root Directory), auto-deploys on push to `main` |
-| Database | [MongoDB Atlas](https://cloud.mongodb.com) | Network Access set to allow all IPs (`0.0.0.0/0`) since the backend host's outbound IP is not fixed |
+Both the frontend and backend are connected to this GitHub repository, so pushing to the main branch automatically triggers a redeploy on both platforms — no manual redeployment steps are required after the initial setup. Environment variables are configured directly in each platform's dashboard (not committed to the repo).
 
-**Deployment notes:**
-- The frontend includes a `vercel.json` rewrite rule so client-side routes (e.g. `/login`, `/signup`) don't 404 on a hard refresh or direct URL visit — this is required for any React Router SPA on Vercel.
-- The backend's CORS configuration only allows requests from `http://localhost:5173` and the URL in `FRONTEND_URL`, rather than allowing all origins.
-- If the backend is redeployed/restarted and MongoDB connection errors appear, check that MongoDB Atlas → Network Access still has an active `0.0.0.0/0` entry.
+---
 
-### Lighthouse Audit
+## Case Study
 
-Run against the deployed frontend (mobile, Chrome DevTools):
+**Problem:**
+Task and project management tools are often either too simple (a flat todo list, no structure) or too complex (heavyweight project management suites). Students and early-career developers frequently need something in between: a way to track multiple projects, break them into actionable tasks, and still keep a quick scratchpad for miscellaneous to-dos — all in one place, with their data kept private and secure.
 
-| Category | Score |
-|---|---|
-| Performance | 96 |
-| Accessibility | 95 |
-| Best Practices | 100 |
-| SEO | 100 |
+**Solution:**
+TaskFlow extends a working MERN Todo app into a two-tier system: **Projects** contain **Tasks**, while the original **Todos** feature remains available independently for quick, unstructured items. A real-time dashboard gives an at-a-glance view of progress, and role-based permissions allow for a lightweight admin view without over-engineering a full permissions system.
 
-SEO was improved from 82 → 100 by adding a meta description (`frontend/index.html`) and a `robots.txt` (`frontend/public/robots.txt`), which resolved Lighthouse's "missing meta description" and "robots.txt is not valid" flags.
+**Technology choices:**
+- **React** — component reusability made it straightforward to extend the existing Todo UI patterns (forms, lists, loading/error/empty states) to Projects and Tasks without duplicating logic.
+- **Node/Express** — a lightweight, unopinionated framework that matched the existing backend and made it easy to add new resources (Projects, Tasks) following the same controller/route/middleware pattern already in place for Todos.
+- **MongoDB** — the Project → Task relationship and flexible schema (optional fields like `dueDate`) suited a document database better than forcing a rigid relational structure for a project of this scope.
+- **JWT** — stateless authentication meant the existing auth system could be reused as-is for the new resources, simply by reusing the same `protect` middleware.
 
-## Security
+**Challenge:**
+Introducing automated backend tests without risking the real production database was a key constraint — the project explicitly required that tests never touch the live MongoDB Atlas cluster used in production.
 
-- Passwords are hashed before being stored in the database.
-- JWT tokens are used for authentication.
-- Protected routes require authentication.
-- MongoDB credentials and JWT secrets are stored in environment variables.
-- `.env` is excluded from Git tracking.
+**How it was solved:**
+The Express app was split into `app.js` (pure route/middleware setup, no side effects) and a thin `server.js` entry point that only connects to the database and starts listening. This allowed the test suite to import `app.js` directly and run it against a temporary `mongodb-memory-server` instance spun up fresh for each test run — completely isolated from both the developer's local database and the production Atlas cluster, with zero risk of touching real user data.
+
+---
 
 ## Future Improvements
 
-Possible future improvements include:
-
-- Todo search and filtering
-- Todo categories
-- Due dates and reminders
-- User profile
-- Dark mode
-- Improved dashboard and statistics
-
-## Author
-
-**Arooj Mehmood**
-
-BS Computer Science Student
-
-## License
-
-This project was created for learning and development purposes.
+- Search and filter for Tasks/Projects (by title, status, priority)
+- File attachments on tasks
+- Email notifications for upcoming due dates
+- Drag-and-drop task board (Kanban view)
+- Dark mode toggle
